@@ -10,6 +10,7 @@ export interface Comment {
     content: string;
     likeCount: number;
     replyCount: number;
+    isAuthor: boolean;
     createdTime: string;
     liked: boolean;
 

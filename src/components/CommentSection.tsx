@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import request from "../utils/request";
 import "./CommentSection.css";
 import { useParams } from "react-router-dom";
+import { formatTime } from "../utils/time";
+import { renderContent } from "../utils/highlight";
 import type { Comment } from "../types/comment";
 
 export default function CommentSection() {
@@ -10,6 +12,9 @@ export default function CommentSection() {
     const [comments, setComments] = useState<Comment[]>([]);
     const [replyMap, setReplyMap] = useState<Record<number, Comment[]>>({});
     const [expanded, setExpanded] = useState<Record<number, boolean>>({});
+    const [cursor, setCursor] = useState<string | null>(null);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const [content, setContent] = useState("");
     const [replyTo, setReplyTo] = useState<Comment | null>(null);
@@ -17,19 +22,63 @@ export default function CommentSection() {
 
     /* ================= 加载评论 ================= */
 
-    const loadComments = () => {
-        request({
+    const loadComments = async (isLoadMore = false) => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+
+        const res = await request({
             url: "/api/comment/root",
             method: "GET",
-            params: { publicId, size: 10 }
-        }).then(res => {
-            setComments(res.data.list);
+            params: {
+                publicId,
+                cursor: isLoadMore ? cursor : null,
+                size: 10
+            }
         });
+
+        const list = res.data.list;
+        const nextCursor = res.data.nextCursor;
+
+        if (isLoadMore) {
+            setComments(prev => {
+                const map = new Map<number, Comment>();
+
+                [...prev, ...list].forEach(item => {
+                    map.set(item.id, item);
+                });
+
+                return Array.from(map.values());
+            });
+        } else {
+            setComments(list);
+        }
+
+        setCursor(nextCursor);
+        setHasMore(!!nextCursor);
+        setLoading(false);
     };
 
     useEffect(() => {
-        loadComments();
+        setCursor(null);
+        setHasMore(true);
+        loadComments(false);
     }, [publicId]);
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const fullHeight = document.body.scrollHeight;
+
+            // 👉 距离底部 100px 触发
+            if (scrollTop + windowHeight >= fullHeight - 100) {
+                loadComments(true);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [cursor, loading, hasMore]);
 
     /* ================= 加载回复 ================= */
 
@@ -119,6 +168,7 @@ export default function CommentSection() {
                 method: "POST",
                 params: { id: comment.id }
             });
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
             // ❗失败回滚（很专业）
             setComments(prev => updateList(prev));
@@ -215,11 +265,14 @@ export default function CommentSection() {
                             {/* 作者 + 时间 */}
                             <div className="author">
                                 <span className="name">{c.author.userName}</span>
-                                <span className="time">{c.createTime}</span>
+                                {c.isAuthor && (
+                                    <span className="UPtag">UP</span>
+                                )}
+                                <span className="time">{formatTime(c.createdTime)}</span>
                             </div>
 
                             {/* 内容 */}
-                            <div className="content">{c.content}</div>
+                            <div className="content">{renderContent(c.content)}</div>
 
                             {/* 操作区 */}
                             <div className="actions">
@@ -251,7 +304,7 @@ export default function CommentSection() {
 
                                         <div className="reply-main">
                                             <span className="name">{r.author.userName}</span>
-                                            <span className="reply-content">：{r.content}</span>
+                                            <span className="reply-content">:{renderContent(r.content)}</span>
 
                                             <div className="reply-actions">
                                                 <button
@@ -326,6 +379,10 @@ export default function CommentSection() {
                         </div>
                     </div>
                 ))}
+                <div className="load-more">
+                    {loading && <span>加载中...</span>}
+                    {!hasMore && <span>没有更多评论了</span>}
+                </div>
             </div>
         </div>
     );

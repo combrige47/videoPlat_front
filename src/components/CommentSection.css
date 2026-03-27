@@ -95,9 +95,9 @@
 .comment-item {
     display: flex;
     gap: 12px;
-
-    padding: 16px 0;
-    border-bottom: 1px solid #f0f0f0;
+}
+.comment-main {
+    flex: 1;
 }
 
 /* ===== 作者 ===== */
@@ -176,12 +176,12 @@
 /* 单条回复 */
 .reply-item {
     display: flex;
-    align-items: center;
-    gap: 6px;
-
-    font-size: 13px;
+    gap: 8px;
     margin-top: 8px;
-    color: #555;
+}
+
+.reply-main {
+    flex: 1;
 }
 
 .reply-item .avatar {
@@ -218,4 +218,35 @@
 
 .expand-btn:hover {
     text-decoration: underline;
+}
+.time {
+    margin-left: 6px;
+    font-size: 12px;
+    color: #aaa;
+}
+.UPtag {
+    margin-left: 6px;
+    padding: 1px 6px;
+
+    font-size: 11px;
+    border-radius: 4px;
+
+    background: #e6f4ff;
+    color: #1677ff;
+
+    font-weight: 500;
+}
+.mention {
+    color: #1677ff;
+    cursor: pointer;
+}
+
+.mention:hover {
+    text-decoration: underline;
+}
+.load-more {
+    text-align: center;
+    color: #aaa;
+    padding: 12px 0;
+    font-size: 13px;
 }
