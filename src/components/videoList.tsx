@@ -21,7 +21,7 @@ export default function VideoList() {
             method: "GET",
             params: {
                 page: 1,
-                size: 10
+                size: 30
             }
         }).then(res => {
             setVideos(res.data.list);

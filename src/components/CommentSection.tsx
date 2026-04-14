@@ -19,11 +19,17 @@ export default function CommentSection() {
     const [content, setContent] = useState("");
     const [replyTo, setReplyTo] = useState<Comment | null>(null);
     const [liking, setLiking] = useState<Record<number, boolean>>({});
+    const [sort, setSort] = useState<"latest" | "hot">("latest");
 
     /* ================= 加载评论 ================= */
 
+    const changeSort = (newSort: "latest" | "hot") => {
+        setSort(newSort);
+    };
+
     const loadComments = async (isLoadMore = false) => {
-        if (loading || !hasMore) return;
+        if (loading) return;
+        if (isLoadMore && !hasMore) return;
 
         setLoading(true);
 
@@ -33,6 +39,7 @@ export default function CommentSection() {
             params: {
                 publicId,
                 cursor: isLoadMore ? cursor : null,
+                sort,
                 size: 10
             }
         });
@@ -79,6 +86,12 @@ export default function CommentSection() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [cursor, loading, hasMore]);
+    useEffect(() => {
+        setCursor(null);
+        setHasMore(true);
+        setComments([]);
+        loadComments(false);
+    }, [sort]);
 
     /* ================= 加载回复 ================= */
 
@@ -226,6 +239,21 @@ export default function CommentSection() {
     return (
         <div className="comment-section">
             <h3>评论</h3>
+            <div className="comment-sort">
+                <button
+                    className={sort === "latest" ? "active" : ""}
+                    onClick={() => changeSort("latest")}
+                >
+                    最新
+                </button>
+
+                <button
+                    className={sort === "hot" ? "active" : ""}
+                    onClick={() => changeSort("hot")}
+                >
+                    最热
+                </button>
+            </div>
 
 
             {/* ✅ 回复提示（必须在输入框上） */}

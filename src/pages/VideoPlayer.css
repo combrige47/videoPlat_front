@@ -82,3 +82,24 @@
 .stats {
     color: gray;
 }
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.tag-item {
+    background: #f0f2f5;
+    color: #409eff;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tag-item:hover {
+    background: #e6f7ff;
+}

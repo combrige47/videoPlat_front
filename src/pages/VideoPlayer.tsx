@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import request from "../utils/request";
 import "./VideoPlayer.css";
 import CommentSection from "../components/CommentSection";
+import * as dashjs from "dashjs";
+import { useRef } from "react";
 
 interface VideoInfo {
     title: string;
@@ -22,6 +24,9 @@ export default function VideoPlayer() {
     const [Liked,setLiked] = useState(false);
     const [LikeCount,setLikeCount] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [tags, setTags] = useState<string[]>([]);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const playerRef = useRef<any>(null);
 
     const handleLike = async () => {
         if (!video || loading) return;
@@ -62,8 +67,48 @@ export default function VideoPlayer() {
             setVideo(data);
             setLiked(data.liked);
             setLikeCount(data.likeCount);
+            setTags(data.tags);
         });
     }, [publicId]);
+
+    const handleVideoRef = (video: HTMLVideoElement | null) => {
+        if (!video || !publicId) return;
+
+        // 防止重复初始化
+        if (playerRef.current) {
+            playerRef.current.reset();
+        }
+
+        const player = dashjs.MediaPlayer().create();
+
+        player.initialize(
+            video,
+            `http://localhost:24352/api/video/${publicId}/dash/manifest.mpd`,
+            false
+        );
+
+        console.log("✅ DASH 初始化成功");
+
+        player.on("error", (e: any) => {
+            console.error("❌ DASH ERROR", e);
+        });
+
+        playerRef.current = player;
+    };
+
+    const handlePlay = () => {
+        if (!publicId) return;
+
+        const key = `viewed_${publicId}`;
+        if (sessionStorage.getItem(key)) return;
+
+        request({
+            url: `/api/video/${publicId}/view`,
+            method: "POST"
+        });
+
+        sessionStorage.setItem(key, "1");
+    };
 
     if (!video) return <div>加载中...</div>;
 
@@ -72,9 +117,10 @@ export default function VideoPlayer() {
             {/* 左侧 */}
             <div className="main">
                 <video
+                    ref={handleVideoRef}
                     className="video"
                     controls
-                    src={`http://localhost:24352/api/video/${publicId}`}
+                    onPlay={handlePlay}
                 />
 
                 <h2 className="title">{video.title}</h2>
@@ -99,13 +145,20 @@ export default function VideoPlayer() {
                 <div className="desc">
                     {video.description || "暂无简介"}
                 </div>
+                <div className="tag-list">
+                    {tags?.map((tag: string, index: number) => (
+                        <span key={index} className="tag-item">
+            {tag}
+        </span>
+                    ))}
+                </div>
                 <CommentSection />
             </div>
 
-            {/* 右侧 */}
-            <div className="sidebar">
-                <h3>推荐视频</h3>
-            </div>
+            {/*/!* 右侧 *!/*/}
+            {/*<div className="sidebar">*/}
+            {/*    <h3>推荐视频</h3>*/}
+            {/*</div>*/}
 
 
 

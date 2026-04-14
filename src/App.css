@@ -483,3 +483,22 @@ button[type="submit"] {
   margin-left: 10px;
   font-size: 12px;
 }
+
+.upload-box {
+  background: #f0f2f5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.upload-box:hover {
+  background: #e6f7ff;
+}
+
+.upload-btn {
+  color: #409eff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}

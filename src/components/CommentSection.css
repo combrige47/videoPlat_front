@@ -250,3 +250,19 @@
     padding: 12px 0;
     font-size: 13px;
 }
+.comment-sort {
+    margin-bottom: 10px;
+}
+
+.comment-sort button {
+    margin-right: 10px;
+    padding: 4px 10px;
+    border: none;
+    background: #1f2028;
+    cursor: pointer;
+}
+
+.comment-sort .active {
+    background: #222;
+    color: #555555;
+}

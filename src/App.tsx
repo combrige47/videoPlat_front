@@ -4,7 +4,7 @@ import AuthModal from './components/AuthModal'
 import type { UserInfo } from './types/user'
 import request from "./utils/request.ts";
 import VideoList from "./components/VideoList";
-import { Routes, Route } from "react-router-dom";
+import {Routes, Route, Link} from "react-router-dom";
 import VideoPlayer from "./pages/VideoPlayer";
 import UploadPage from "./pages/uploadPage.tsx";
 
@@ -41,7 +41,13 @@ function App() {
       <header className="app-header">
         <div className="logo">🎬 MyVideo</div>
 
+
         <div className="user-info">
+            <Link to="/upload" className="upload-link">
+                <div className="upload-box">
+                    <div className="upload-btn">上传视频</div>
+                </div>
+            </Link>
           {user ? (
               <div className="user-box">
                 <img
