@@ -5,6 +5,7 @@ import "./VideoPlayer.css";
 import CommentSection from "../components/CommentSection";
 import * as dashjs from "dashjs";
 import { useRef } from "react";
+import { Eye, Heart } from "lucide-react";
 
 interface VideoInfo {
     title: string;
@@ -110,6 +111,13 @@ export default function VideoPlayer() {
         sessionStorage.setItem(key, "1");
     };
 
+    function formatCount(num: number) {
+        if (num >= 10000) {
+            return (num / 10000).toFixed(1) + "万";
+        }
+        return num;
+    }
+
     if (!video) return <div>加载中...</div>;
 
     return (
@@ -135,9 +143,17 @@ export default function VideoPlayer() {
                     </div>
 
                     <div className="stats">
-                        👀 {video.viewCount}
-                        <button onClick={handleLike}>
-                            {video.liked ? "❤️ 已点赞" : "🤍 点赞"} ({video.likeCount})
+                        <div className="views">
+                            <Eye size={16} />
+                            <span>{formatCount(video.viewCount)}</span>
+                        </div>
+
+                        <button
+                            className={`like-btn ${video.liked ? "liked" : ""}`}
+                            onClick={handleLike}
+                        >
+                            <Heart size={16} fill={video.liked ? "currentColor" : "none"}/>
+                            <span>{formatCount(video.likeCount)}</span>
                         </button>
                     </div>
                 </div>
@@ -155,10 +171,10 @@ export default function VideoPlayer() {
                 <CommentSection />
             </div>
 
-            {/*/!* 右侧 *!/*/}
-            {/*<div className="sidebar">*/}
-            {/*    <h3>推荐视频</h3>*/}
-            {/*</div>*/}
+            {/* 右侧 */}
+            <div className="sidebar">
+                <h3>推荐视频</h3>
+            </div>
 
 
 
