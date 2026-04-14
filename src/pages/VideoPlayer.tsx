@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import request from "../utils/request";
 import "./VideoPlayer.css";
 import CommentSection from "../components/CommentSection";
@@ -22,12 +22,12 @@ interface VideoInfo {
 export default function VideoPlayer() {
     const { publicId } = useParams();
     const [video, setVideo] = useState<VideoInfo | null>(null);
-    const [Liked,setLiked] = useState(false);
-    const [LikeCount,setLikeCount] = useState(0);
+    const [,setLiked] = useState(false);
+    const [,setLikeCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-    const playerRef = useRef<any>(null);
+    const videoElementRef = useRef<HTMLVideoElement | null>(null);
+    const playerRef = useRef<dashjs.MediaPlayerClass | null>(null);
 
     const handleLike = async () => {
         if (!video || loading) return;
@@ -72,30 +72,27 @@ export default function VideoPlayer() {
         });
     }, [publicId]);
 
-    const handleVideoRef = (video: HTMLVideoElement | null) => {
-        if (!video || !publicId) return;
+    const videoRefCallback = useCallback((node: HTMLVideoElement | null) => {
+        if (node) {
+            // 如果已经初始化过同一个 ID 的播放器，就不再重复初始化
+            if (playerRef.current) return;
 
-        // 防止重复初始化
-        if (playerRef.current) {
-            playerRef.current.reset();
+            console.log("检测到视频节点已挂载，开始初始化播放器");
+            const player = dashjs.MediaPlayer().create();
+            player.initialize(
+                node,
+                `http://localhost:24352/api/video/${publicId}/dash/manifest.mpd`,
+                false
+            );
+            playerRef.current = player;
+        } else {
+            // 当组件卸载或节点消失时，销毁播放器
+            if (playerRef.current) {
+                playerRef.current.destroy();
+                playerRef.current = null;
+            }
         }
-
-        const player = dashjs.MediaPlayer().create();
-
-        player.initialize(
-            video,
-            `http://localhost:24352/api/video/${publicId}/dash/manifest.mpd`,
-            false
-        );
-
-        console.log("✅ DASH 初始化成功");
-
-        player.on("error", (e: any) => {
-            console.error("❌ DASH ERROR", e);
-        });
-
-        playerRef.current = player;
-    };
+    }, [publicId]);
 
     const handlePlay = () => {
         if (!publicId) return;
@@ -122,10 +119,9 @@ export default function VideoPlayer() {
 
     return (
         <div className="player-page">
-            {/* 左侧 */}
             <div className="main">
                 <video
-                    ref={handleVideoRef}
+                    ref={videoRefCallback}
                     className="video"
                     controls
                     onPlay={handlePlay}
