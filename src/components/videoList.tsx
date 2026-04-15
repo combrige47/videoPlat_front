@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {formatTime} from "../utils/time.ts";
 import request from "../utils/request";
 import { Link } from "react-router-dom";
 import "./videoList.css"
@@ -8,7 +9,10 @@ interface Video {
     publicId: string;
     title: string;
     coverUrl: string;
-    author : string;
+    author : {
+        username: string;
+    }
+    publishTime: string;
     duration: number;
     viewCount: number;
     likeCount: number;
@@ -115,8 +119,14 @@ export default function VideoList() {
                     </div>
 
                     <div className="info">
-                        <h3>{video.title}</h3>
-                        <p>{video.author}</p>
+                        <div className="title">
+                            <h3>{video.title}</h3>
+                        </div>
+                        <p className="author">
+                            <span className="tag">UP</span>
+                            <span className="name">{video.author.username}</span>
+                            <span className="time">{formatTime(video.publishTime)}</span>
+                        </p>
                     </div>
                 </Link>
             ))}

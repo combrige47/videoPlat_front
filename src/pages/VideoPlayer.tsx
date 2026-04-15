@@ -6,6 +6,7 @@ import CommentSection from "../components/CommentSection";
 import * as dashjs from "dashjs";
 import { useRef } from "react";
 import { Eye, Heart } from "lucide-react";
+import {formatCount} from "../utils/format.ts"
 
 interface VideoInfo {
     title: string;
@@ -26,7 +27,7 @@ export default function VideoPlayer() {
     const [,setLikeCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [tags, setTags] = useState<string[]>([]);
-    const videoElementRef = useRef<HTMLVideoElement | null>(null);
+    useRef<HTMLVideoElement | null>(null);
     const playerRef = useRef<dashjs.MediaPlayerClass | null>(null);
 
     const handleLike = async () => {
@@ -108,12 +109,7 @@ export default function VideoPlayer() {
         sessionStorage.setItem(key, "1");
     };
 
-    function formatCount(num: number) {
-        if (num >= 10000) {
-            return (num / 10000).toFixed(1) + "万";
-        }
-        return num;
-    }
+
 
     if (!video) return <div>加载中...</div>;
 

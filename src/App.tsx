@@ -7,6 +7,7 @@ import VideoList from "./components/VideoList";
 import {Routes, Route, Link} from "react-router-dom";
 import VideoPlayer from "./pages/VideoPlayer";
 import UploadPage from "./pages/uploadPage.tsx";
+import UserSpace from "./pages/UserSpace.tsx";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -67,6 +68,7 @@ function App() {
         <Routes>
             <Route path="/" element={<VideoList />} />
             <Route path="/upload" element={<UploadPage />}/>
+            <Route path= "/space/:userId" element={<UserSpace />} />
             <Route path="/:publicId" element={<VideoPlayer />} />
         </Routes>
       <AuthModal
