@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import request from "../utils/request";
 import "./CommentSection.css";
-import { useParams } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import { formatTime } from "../utils/time";
 import { renderContent } from "../utils/highlight";
 import type { Comment } from "../types/comment";
@@ -282,10 +282,13 @@ export default function CommentSection() {
                     <div key={c.id} className="comment-item">
 
                         {/* 左侧头像 */}
+                        <Link
+                            to={`/space/${c.author.id}`}>
                         <img
                             className="avatar"
                             src={c.author.avatar || "https://via.placeholder.com/36"}
                         />
+                        </Link>
 
                         {/* 右侧主体 */}
                         <div className="comment-main">
@@ -324,11 +327,12 @@ export default function CommentSection() {
                                 {/* preview */}
                                 {!expanded[c.id] && c.previewReply?.map(r => (
                                     <div key={r.id} className="reply-item">
-
+                                        <Link to={`/space/${r.author.id}`}>
                                         <img
                                             src={r.author.avatar || "https://via.placeholder.com/24"}
                                             className="avatar"
                                         />
+                                        </Link>
 
                                         <div className="reply-main">
                                             <span className="name">{r.author.userName}</span>

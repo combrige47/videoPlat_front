@@ -51,10 +51,12 @@ function App() {
             </Link>
           {user ? (
               <div className="user-box">
+                  <Link to={`/space/${user.id}`} className="space-link">
                 <img
                     src={user.avatar || "https://via.placeholder.com/40"}
                     className="avatar"
                 />
+                  </Link>
                 <span>{user.username}</span>
                 <button onClick={handleLogout}>登出</button>
               </div>

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useCallback, useEffect, useState} from "react";
 import request from "../utils/request";
 import "./VideoPlayer.css";
@@ -15,6 +15,7 @@ interface VideoInfo {
     viewCount: number;
     liked: boolean;
     author: {
+        id: number;
         username: string;
         avatar: string;
     };
@@ -127,10 +128,12 @@ export default function VideoPlayer() {
 
                 <div className="meta">
                     <div className="author">
+                        <Link to={`/space/${video.author.id}`}>
                         <img
                             src={video.author.avatar || "https://via.placeholder.com/40"}
                             className="avatar"
                         />
+                        </Link>
                         <span>{video.author.username}</span>
                     </div>
 

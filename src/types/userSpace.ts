@@ -9,6 +9,10 @@ export interface SpaceVideoInfo{
     commentCount: number;
 }
 
+export interface VideoCardPros{
+    video: SpaceVideoInfo;
+}
+
 export interface SpaceInfo{
     userId: number;
     userName: string;
@@ -21,4 +25,7 @@ export interface SpaceInfo{
     isMe: boolean;
     isFollowing: boolean;
     isFollowed: boolean;
+    myVideos: SpaceVideoInfo[];
+    likeVideos: SpaceVideoInfo[];
+    favoriteVideos: SpaceVideoInfo[];
 }

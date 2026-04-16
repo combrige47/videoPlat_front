@@ -7,6 +7,7 @@ import {Link} from "react-router-dom";
 import {Eye} from "lucide-react";
 import "./UserSpace.css"
 import {formatCount} from "../utils/format.ts";
+import VideoCard from "../components/VideoCard.tsx";
 
 export default function UserSpace(){
     const {userId} = useParams();
@@ -87,38 +88,31 @@ export default function UserSpace(){
                     </div>
                 </div>
             </div>
-            {spaceVideos.map(video => (
-                <Link
-                    key={video.publicId}
-                    to={`/${video.publicId}`}
-                    className="video-card"
-                >
-                    <div className="cover-wrapper">
-                        <img src={video.coverUrl} className="cover" />
-                        <span className={"view"}>
-                            <Eye size={10} />
-                            {formatCount(video.viewCount)}
-                        </span>
-                        <span className="duration">
-    {(() => {
-        const h = Math.floor(video.duration / 3600);
-        const m = Math.floor((video.duration % 3600) / 60);
-        const s = video.duration % 60;
+            <div className="video-section">
+                <h2>TA的视频</h2>
+                <div className="video-grid">
+                    {spaceInfo?.myVideos.map(video => (
+                        <VideoCard key={video.publicId} video={video} />
+                    ))}
+                </div>
+            </div>
 
-        return h > 0
-            ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
-            : `${m}:${String(s).padStart(2, "0")}`;
-    })()}
-</span>
-                    </div>
-
-                    <div className="info">
-                        <div className="title">
-                            <h3>{video.title}</h3>
-                        </div>
-                    </div>
-                </Link>
-            ))}
+            <div className="video-section">
+                <h2>TA的点赞</h2>
+                <div className="video-grid">
+                    {spaceInfo?.likeVideos.map(video => (
+                        <VideoCard key={video.publicId} video={video} />
+                    ))}
+                </div>
+            </div>
+            <div className="video-section">
+                <h2>TA的点赞</h2>
+                <div className="video-grid">
+                    {spaceInfo?.favoriteVideos.map(video => (
+                        <VideoCard key={video.publicId} video={video} />
+                    ))}
+                </div>
+            </div>
         </div>
     )
 }
