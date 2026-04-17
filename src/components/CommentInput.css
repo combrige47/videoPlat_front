@@ -1,0 +1,122 @@
+/* ===== 外层 ===== */
+.comment-input {
+    background: #fff;
+    transition: all 0.25s ease;
+}
+
+/* 吸底 */
+.comment-input.fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    border-top: 1px solid #eee;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+
+    padding: 12px 0;
+    z-index: 9999;
+
+    animation: slideUp 0.25s ease;
+}
+
+/* ===== 居中容器 ===== */
+.input-box {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ===== textarea容器（关键） ===== */
+.textarea-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* ===== 输入框（唯一版本） ===== */
+.textarea-wrapper textarea {
+    width: 100%;
+    max-height: 80px;
+    min-height: 40px;
+
+    resize: none;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    padding: 12px 80px 12px 14px; /* 👈 给按钮留空间 */
+
+    font-size: 14px;
+    line-height: 1.6;
+
+    outline: none;
+    transition: all 0.2s;
+}
+.comment-input.fixed textarea {
+    min-height: 40px;
+    max-height: 120px;
+}
+
+/* focus效果 */
+.textarea-wrapper textarea:focus {
+    border-color: #00a1d6;
+    box-shadow: 0 0 0 2px rgba(0,161,214,0.1);
+}
+
+/* ===== 发布按钮（唯一版本） ===== */
+.textarea-wrapper button {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+
+    height: 32px;
+    padding: 0 16px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #00a1d6;
+    color: #fff;
+    font-size: 13px;
+
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* hover */
+.textarea-wrapper button:hover {
+    background: #0090c0;
+}
+
+/* 禁用 */
+.textarea-wrapper button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* ===== 回复提示 ===== */
+.replying-box {
+    max-width: 900px;
+    margin: 0 auto 8px;
+    font-size: 13px;
+    color: #666;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.replying-box button {
+    border: none;
+    background: transparent;
+    color: #00a1d6;
+    cursor: pointer;
+}
+
+/* ===== 动画 ===== */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}

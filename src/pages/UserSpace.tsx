@@ -106,7 +106,7 @@ export default function UserSpace(){
                 </div>
             </div>
             <div className="video-section">
-                <h2>TA的点赞</h2>
+                <h2>TA的收藏</h2>
                 <div className="video-grid">
                     {spaceInfo?.favoriteVideos.map(video => (
                         <VideoCard key={video.publicId} video={video} />

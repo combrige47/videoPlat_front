@@ -1,268 +1,161 @@
-/* ===== 整体 ===== */
+/* ===== 基础变量与复位 ===== */
+:root {
+    --primary-color: #1677ff;
+    --like-color: #ff4d4f;
+    --text-main: #1f2028;
+    --text-sub: #666;
+    --text-hint: #aaa;
+    --bg-reply: #f9f9f9;
+}
+
 .comment-section {
     max-width: 800px;
-    margin: 20px auto;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: -apple-system, system-ui, sans-serif;
 }
 
-.comment-section h3 {
-    margin-bottom: 16px;
-}
-
-/* ===== 输入框 ===== */
-.comment-input {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-
-    background: #fff;
-    padding: 8px 12px;
-
-    border-top: 1px solid #eee;
-    z-index: 100;
-}
-
-.input-box textarea {
-    flex: 1;
-    border: none;
-    outline: none;
-    resize: none;
-
-    font-size: 14px;
-    background: transparent;
-
-    min-height: 24px;
-    max-height: 80px;
-}
-.comment-input textarea:focus {
-    border-color: #1677ff;
-    background: #fff;
-}
-
-.input-box button {
-    border: none;
-    background: #1677ff;
-    color: white;
-
-    padding: 4px 12px;
-    border-radius: 16px;
-
-    font-size: 13px;
-    cursor: pointer;
-
-    margin-left: 6px;
-}
-
-.input-box button:hover {
-    background: #4096ff;
-}
-.input-box {
+/* ===== 排序 Tab ===== */
+.comment-sort {
     display: flex;
-    align-items: center;
-
-    border: 1px solid #ddd;   /* ✅ 整体边框 */
-    border-radius: 20px;
-
-    padding: 6px 8px;
-    background: #fafafa;
-
-    transition: all 0.2s;
-}
-.input-box:focus-within {
-    border-color: #1677ff;
-    background: #fff;
+    gap: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #eee;
 }
 
-/* ===== 回复提示 ===== */
-.replying-box {
-    position: fixed;
-    bottom: 80px; /* 在输入框上方 */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-
-    background: #fff3e0;
-    border: 1px solid #ffd591;
-    padding: 6px 10px;
-    border-radius: 8px;
-
-    z-index: 101;
+.comment-sort button {
+    padding: 8px 0;
+    border: none;
+    background: none;
+    font-size: 15px;
+    color: var(--text-sub);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
 }
 
-/* ===== 评论卡片 ===== */
+.comment-sort button.active {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.comment-sort button.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--text-main);
+}
+
+/* ===== 评论卡片布局 ===== */
 .comment-item {
     display: flex;
-    gap: 12px;
+    gap: 16px;
+    margin-bottom: 24px;
 }
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid #f0f0f0;
+}
+
 .comment-main {
     flex: 1;
 }
 
-/* ===== 作者 ===== */
-.avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-.author {
+.author-info {
     display: flex;
     align-items: center;
     gap: 8px;
-
-    font-size: 13px;
-    color: #666;
+    margin-bottom: 4px;
 }
 
-.author span {
-    font-weight: 500;
-    color: #333;
-}
-
-.author img {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    margin-right: 8px;
-}
-
-
-/* ===== 内容 ===== */
-.content {
-    margin: 6px 0 10px;
-
+.author-name {
     font-size: 14px;
-    line-height: 1.6;
-    color: #222;
+    font-weight: 600;
+    color: #fb7299;
 }
 
-/* ===== 操作区 ===== */
+.time {
+    font-size: 12px;
+    color: var(--text-hint);
+}
+
+.content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-main);
+    margin: 8px 0;
+    word-break: break-all;
+}
+
+/* ===== 操作按钮 ===== */
 .actions {
     display: flex;
-    gap: 16px;
-
+    gap: 20px;
     font-size: 13px;
-    color: #999;
+    color: var(--text-sub);
 }
 
-.actions button {
-    border: none;
-    background: none;
-    cursor: pointer;
-
+.action-btn {
     display: flex;
     align-items: center;
     gap: 4px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    transition: color 0.2s;
+    padding: 0;
 }
 
-.actions button:hover {
-    color: #1677ff;
+.action-btn:hover {
+    color: var(--primary-color);
 }
 
-.actions .liked {
-    color: #ff4d4f;
+.action-btn.liked {
+    color: var(--like-color);
 }
 
-
-/* ===== 回复区 ===== */
+/* ===== 回复列表区 ===== */
 .reply-list {
-    margin-top: 10px;
-    padding-left: 10px;
-    border-left: 2px solid #f5f5f5;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--bg-reply);
+    border-radius: 8px;
 }
 
-/* 单条回复 */
 .reply-item {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 10px;
+    padding: 8px 0;
 }
 
-.reply-main {
-    flex: 1;
-}
-
-.reply-item .avatar {
+.reply-avatar {
     width: 24px;
     height: 24px;
     border-radius: 50%;
 }
 
-.reply-item .name {
-    font-weight: 500;
-    color: #333;
+.reply-content-box {
+    font-size: 14px;
+    line-height: 1.5;
 }
 
-/* 回复按钮 */
-.reply-item button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 12px;
-    color: #888;
-}
-
-.reply-item button:hover {
-    color: #1677ff;
-}
-
-/* 展开按钮 */
 .expand-btn {
-    margin-top: 6px;
-    font-size: 12px;
-    color: #1677ff;
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-sub);
     cursor: pointer;
 }
 
 .expand-btn:hover {
-    text-decoration: underline;
-}
-.time {
-    margin-left: 6px;
-    font-size: 12px;
-    color: #aaa;
-}
-.UPtag {
-    margin-left: 6px;
-    padding: 1px 6px;
-
-    font-size: 11px;
-    border-radius: 4px;
-
-    background: #e6f4ff;
-    color: #1677ff;
-
-    font-weight: 500;
-}
-.mention {
-    color: #1677ff;
-    cursor: pointer;
-}
-
-.mention:hover {
-    text-decoration: underline;
-}
-.load-more {
-    text-align: center;
-    color: #aaa;
-    padding: 12px 0;
-    font-size: 13px;
-}
-.comment-sort {
-    margin-bottom: 10px;
-}
-
-.comment-sort button {
-    margin-right: 10px;
-    padding: 4px 10px;
-    border: none;
-    background: #1f2028;
-    cursor: pointer;
-}
-
-.comment-sort .active {
-    background: #222;
-    color: #555555;
+    color: var(--primary-color);
 }

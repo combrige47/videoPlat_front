@@ -134,6 +134,45 @@
     display: block;
     vertical-align: middle;
 }
+.favorite-btn span {
+    line-height: 1;        /* 👈 统一文字行高 */
+    font-size: 14px;       /* 👈 统一字体大小 */
+    display: block;        /* 👈 消除 inline 的幽灵空白 */
+}
+
+.favorite-btn {
+    margin: 0;
+    vertical-align: middle;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 20px;
+    background: #f6f7f8;
+    color: #666;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.favorite-btn:hover {
+    background: #ffecec;
+    color: #ffd97a;
+}
+.favorite-btn.favorite {
+    background: #ffecec;
+    color: #ffd97a;
+}
+.favorite-btn:active {
+    transform: scale(0.95);
+}
+.views svg,
+.favorite-btn svg {
+    flex-shrink: 0;        /* 防止图标被压缩 */
+    display: block;
+    vertical-align: middle;
+}
 
 .tag-list {
     display: flex;
@@ -154,4 +193,7 @@
 
 .tag-item:hover {
     background: #e6f7ff;
+}
+.comment-anchor {
+    height: 1px;
 }

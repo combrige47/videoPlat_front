@@ -5,8 +5,10 @@ import "./VideoPlayer.css";
 import CommentSection from "../components/CommentSection";
 import * as dashjs from "dashjs";
 import { useRef } from "react";
-import { Eye, Heart } from "lucide-react";
-import {formatCount} from "../utils/format.ts"
+import {Eye, Heart, Star} from "lucide-react";
+import {formatCount} from "../utils/format.ts";
+import type { Comment } from "../types/comment";
+import CommentInput from "../components/CommentInput.tsx";
 
 interface VideoInfo {
     title: string;
@@ -14,6 +16,8 @@ interface VideoInfo {
     likeCount: number;
     viewCount: number;
     liked: boolean;
+    favorited: boolean;
+    favoriteCount: number;
     author: {
         id: number;
         username: string;
@@ -22,6 +26,12 @@ interface VideoInfo {
 }
 
 export default function VideoPlayer() {
+    const [content, setContent] = useState("");
+    const [inputHeight, setInputHeight] = useState(0);
+    const [replyTo, setReplyTo] = useState<Comment | null>(null);
+    const [fixed, setFixed] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const commentTopRef = useRef<HTMLDivElement | null>(null);
     const { publicId } = useParams();
     const [video, setVideo] = useState<VideoInfo | null>(null);
     const [,setLiked] = useState(false);
@@ -30,6 +40,73 @@ export default function VideoPlayer() {
     const [tags, setTags] = useState<string[]>([]);
     useRef<HTMLVideoElement | null>(null);
     const playerRef = useRef<dashjs.MediaPlayerClass | null>(null);
+
+    useEffect(() => {
+        const target = commentTopRef.current;
+        if (!target) return;
+
+        const observer = new IntersectionObserver(([entry]) => {
+            setFixed(!entry.isIntersecting);
+        });
+
+        observer.observe(target);
+
+        return () => observer.unobserve(target);
+    }, []);
+
+    const handleSubmit = async () => {
+        if (!content.trim()) return;
+
+        let parentId = null;
+        let rootId = null;
+
+        if (replyTo) {
+            parentId = replyTo.id;
+            rootId = replyTo.rootId || replyTo.id;
+        }
+
+        await request({
+            url: "/api/comment/create",
+            method: "POST",
+            data: {
+                publicId,
+                content,
+                parentId,
+                rootId
+            }
+        });
+
+        setContent("");
+        setReplyTo(null);
+
+        // ✅ 改成这个
+        setRefreshKey(prev => prev + 1);
+    };
+
+    const handleFavorite = async() =>{
+        if(!video|| loading) return;
+        setLoading(true);
+
+        try{
+            const isFavorited = video.favorited;
+            const url = isFavorited
+                ? `/api/video/unfavorite/${publicId}`
+                : `/api/video/favorite/${publicId}`;
+            await request({ url, method: "POST" });
+            setVideo(prev => {
+                if (!prev) return prev;
+                return{
+                    ...prev,
+                    favorite: !isFavorited,
+                    favoriteCount: isFavorited
+                        ? prev.favoriteCount - 1
+                        : prev.favoriteCount + 1
+                };
+            });
+        }finally {
+            setLoading(false);
+        }
+    };
 
     const handleLike = async () => {
         if (!video || loading) return;
@@ -150,6 +227,14 @@ export default function VideoPlayer() {
                             <Heart size={16} fill={video.liked ? "currentColor" : "none"}/>
                             <span>{formatCount(video.likeCount)}</span>
                         </button>
+
+                        <button
+                            className={`favorite-btn ${video.favorited ? "favorite" : ""}`}
+                            onClick={handleFavorite}
+                        >
+                            <Star size={16} fill={video.favorited ? "currentColor" : "none"}/>
+                            <span>{formatCount(video.favoriteCount)}</span>
+                        </button>
                     </div>
                 </div>
 
@@ -163,7 +248,23 @@ export default function VideoPlayer() {
         </span>
                     ))}
                 </div>
-                <CommentSection />
+                <CommentInput
+                    content={content}
+                    setContent={setContent}
+                    handleSubmit={handleSubmit}
+                    replyTo={replyTo}
+                    setReplyTo={setReplyTo}
+                    fixed={fixed}
+                    onHeightChange={setInputHeight}
+                />
+
+                <div ref={commentTopRef} className="comment-anchor"></div>
+
+                <CommentSection
+                    key={refreshKey}
+                    setReplyTo={setReplyTo}
+                />
+                {fixed && <div style={{ height: inputHeight }} />}
             </div>
 
             {/* 右侧 */}
