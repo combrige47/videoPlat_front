@@ -43,6 +43,26 @@ export default function CommentInput({
         return () => observer.disconnect();
     }, [content, replyTo, fixed]);
 
+    useEffect(() => {
+        const el = inputRef.current;
+        if (!el || !onHeightChange) return;
+        const observer = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const h = entry.target.getBoundingClientRect().height;
+                if (h > 0) {
+                    onHeightChange(h);
+                }
+            }
+        });
+
+        observer.observe(el);
+
+        // 初始执行一次
+        onHeightChange(el.offsetHeight);
+
+        return () => observer.disconnect();
+    }, [onHeightChange]);
+
     /* ===== 渲染 ===== */
     return (
         <div
@@ -62,7 +82,6 @@ export default function CommentInput({
                                 : "说点什么..."
                         }
 
-                        /* 自动高度 */
                         onInput={e => {
                             const el = e.currentTarget;
 
@@ -78,8 +97,6 @@ export default function CommentInput({
                                 el.style.overflowY = "hidden";
                             }
                         }}
-
-                        /* Ctrl + Enter 发送（加分项） */
                         onKeyDown={e => {
                             if (e.ctrlKey && e.key === "Enter") {
                                 handleSubmit();

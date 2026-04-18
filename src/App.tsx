@@ -4,13 +4,15 @@ import AuthModal from './components/AuthModal'
 import type { UserInfo } from './types/user'
 import request from "./utils/request.ts";
 import VideoList from "./components/VideoList";
-import {Routes, Route, Link} from "react-router-dom";
+import {Routes, Route, Link, BrowserRouter} from "react-router-dom";
 import VideoPlayer from "./pages/VideoPlayer";
 import UploadPage from "./pages/uploadPage.tsx";
 import UserSpace from "./pages/UserSpace.tsx";
+import {PlayCircle} from "lucide-react";
+import ProfilePage from "./pages/ProfilePage.tsx";
+import {UserContext} from "./context/UserContext.ts";
 
 function App() {
-  const [count, setCount] = useState(0)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [user, setUser] = useState<UserInfo | null>(null)
 
@@ -40,7 +42,14 @@ function App() {
   return (
     <>
       <header className="app-header">
-        <div className="logo">🎬 MyVideo</div>
+          <Link to="/" className="logo-container">
+              <div className="logo-icon-wrapper">
+                  <PlayCircle className="logo-icon" size={28} />
+              </div>
+              <span className="logo-text">
+        ECHO<span className="logo-dot">.</span>VIDEO
+      </span>
+          </Link>
 
 
         <div className="user-info">
@@ -52,10 +61,12 @@ function App() {
           {user ? (
               <div className="user-box">
                   <Link to={`/space/${user.id}`} className="space-link">
-                <img
-                    src={user.avatar || "https://via.placeholder.com/40"}
-                    className="avatar"
-                />
+                      <div className="avatar">
+                          <img
+                              src={user.avatar || "https://via.placeholder.com/36"}
+                          />
+                      </div>
+
                   </Link>
                 <span>{user.username}</span>
                 <button onClick={handleLogout}>登出</button>
@@ -71,6 +82,7 @@ function App() {
             <Route path="/" element={<VideoList />} />
             <Route path="/upload" element={<UploadPage />}/>
             <Route path= "/space/:userId" element={<UserSpace />} />
+            <Route path= "/account" element={<ProfilePage />} />
             <Route path="/:publicId" element={<VideoPlayer />} />
         </Routes>
       <AuthModal

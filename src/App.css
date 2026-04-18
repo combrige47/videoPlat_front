@@ -348,13 +348,57 @@ button[type="submit"] {
   font-weight: bold;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.logo-container:hover {
+  transform: translateY(-1px);
+}
+
+/* 图标背景装饰 */
+.logo-icon-wrapper {
+  background: linear-gradient(135deg, #1677ff 0%, #003eb3 100%);
+  padding: 6px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.3);
+}
+
+.logo-icon {
+  color: white;
+}
+
+/* 文字排版 */
+.logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(to right, #1f2028, #666);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* 那个点的小点缀 */
+.logo-dot {
+  -webkit-text-fill-color: #1677ff; /* 品牌色 */
+  margin-left: 1px;
+}
+
 .user-box {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.avatar {
+.avatar img{
   width: 36px;
   height: 36px;
   border-radius: 50%;

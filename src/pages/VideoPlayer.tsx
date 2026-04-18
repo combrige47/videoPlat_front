@@ -31,7 +31,6 @@ export default function VideoPlayer() {
     const [replyTo, setReplyTo] = useState<Comment | null>(null);
     const [fixed, setFixed] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
-    const commentTopRef = useRef<HTMLDivElement | null>(null);
     const { publicId } = useParams();
     const [video, setVideo] = useState<VideoInfo | null>(null);
     const [,setLiked] = useState(false);
@@ -41,18 +40,22 @@ export default function VideoPlayer() {
     useRef<HTMLVideoElement | null>(null);
     const playerRef = useRef<dashjs.MediaPlayerClass | null>(null);
 
-    useEffect(() => {
-        const target = commentTopRef.current;
-        if (!target) return;
+    const commentTopRef = useCallback((node: HTMLDivElement | null) => {
+        if (!node) return;
 
         const observer = new IntersectionObserver(([entry]) => {
-            setFixed(!entry.isIntersecting);
+            // 使用 entry.boundingClientRect.top 判断是否滚动到了上方
+            // 这样比单纯判断 isIntersecting 更稳定
+            setFixed(entry.boundingClientRect.top < 0);
+        }, {
+            threshold: [0, 1],
+            rootMargin: "-1px 0px 0px 0px" // 微调触发点，防止临界点抖动
         });
 
-        observer.observe(target);
-
-        return () => observer.unobserve(target);
+        observer.observe(node);
     }, []);
+
+
 
     const handleSubmit = async () => {
         if (!content.trim()) return;
@@ -248,6 +251,8 @@ export default function VideoPlayer() {
         </span>
                     ))}
                 </div>
+                {fixed && <div style={{ height: inputHeight }} />}
+                <div ref={commentTopRef} className="comment-anchor" style={{ height: '1px' }}></div>
                 <CommentInput
                     content={content}
                     setContent={setContent}

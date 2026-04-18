@@ -56,7 +56,7 @@
     margin-bottom: 24px;
 }
 
-.avatar {
+.avatar img{
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -158,4 +158,30 @@
 
 .expand-btn:hover {
     color: var(--primary-color);
+}
+
+/* @提到 基础样式 */
+.mention {
+    color: #1677ff;          /* 品牌主色 */
+    font-weight: 500;
+    padding: 1px 4px;        /* 增加一点内边距 */
+    margin: 0 2px;
+    border-radius: 4px;      /* 圆角 */
+    background-color: rgba(22, 119, 255, 0.08); /* 极浅的背景色，增加层次感 */
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;   /* 确保边距生效 */
+    vertical-align: baseline;
+}
+
+/* 鼠标悬停交互 */
+.mention:hover {
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(22, 119, 255, 0.2); /* 淡淡的阴影 */
+}
+
+/* 如果是 UP 主（作者）提到的，可以加个特殊标识（可选） */
+.mention.is-author {
+    color: #ff4d4f;
+    background-color: rgba(255, 77, 79, 0.08);
 }

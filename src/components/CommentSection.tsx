@@ -84,7 +84,7 @@ export default function CommentSection({ setReplyTo }: Props) {
                 params: { id: comment.id }
             });
         } catch {
-            // 失败时应有回滚逻辑（此处略，参考原本逻辑）
+            //TODO: 恢复点赞状态
         }
     };
 
@@ -126,7 +126,9 @@ function CommentItem({ comment, replies, isExpanded, onLike, onReply, onExpand }
     return (
         <div className="comment-item">
             <Link to={`/space/${comment.author.id}`}>
-                <img className="avatar" src={comment.author.avatar} alt="avatar" />
+                <div className="avatar">
+                <img src={comment.author.avatar}  />
+                </div>
             </Link>
             <div className="comment-main">
                 <div className="author-info">

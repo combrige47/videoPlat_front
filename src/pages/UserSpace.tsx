@@ -1,4 +1,4 @@
-import {useEffect,useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import { useParams } from "react-router-dom";
 import type {SpaceVideoInfo} from "../types/userSpace.ts";
 import type {SpaceInfo} from "../types/userSpace.ts";
@@ -8,11 +8,58 @@ import {Eye} from "lucide-react";
 import "./UserSpace.css"
 import {formatCount} from "../utils/format.ts";
 import VideoCard from "../components/VideoCard.tsx";
+import CropModal from "../components/CropModal.tsx";
 
 export default function UserSpace(){
     const {userId} = useParams();
     const [spaceInfo,setSpaceInfo] = useState<SpaceInfo>();
     const [spaceVideos,setSpaceVideos] = useState<SpaceVideoInfo[]>([]);
+    const [cropImage, setCropImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const handleClick = () => {
+        fileInputRef.current?.click();
+    };
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("请选择图片文件");
+            return;
+        }
+
+        const url = URL.createObjectURL(file);
+        setCropImage(url);
+    };
+
+    const handleCropConfirm = async (blob: Blob) => {
+        const formData = new FormData();
+        formData.append("file", blob, "avatar.jpg");
+
+        const res = await request({
+            url: "/api/user/uploadFace",
+            method: "POST",
+            faceFile: formData
+        });
+
+        setSpaceInfo(prev => ({
+            ...prev,
+            avatar: `/api/user/face/get/${res.data}`
+        }));
+
+        setCropImage(null);
+    };
+    useEffect(() => {
+        if (cropImage) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [cropImage]);
     useEffect(() => {
         console.log(userId)
         if(!userId) return;
@@ -47,6 +94,7 @@ export default function UserSpace(){
             });
         } catch (e) {
             // 失败回滚
+            // @ts-ignore
             setSpaceInfo(prev => ({
                 ...prev,
                 isFollowed: !newState
@@ -57,10 +105,30 @@ export default function UserSpace(){
     return(
         <div className="user-space">
             <div className="base-space-info">
+                {cropImage && (
+                    <CropModal
+                        image={cropImage}
+                        onCancel={() => setCropImage(null)}
+                        onConfirm={handleCropConfirm}
+                    />
+                )}
+
                 <div className="left">
-                    <img
-                        className="avatar"
-                        src={spaceInfo?.avatar || "https://via.placeholder.com/40"}
+                    <div className="avatar-wrapper" onClick={handleClick}>
+                        <img
+                            src={spaceInfo?.avatar || "https://via.placeholder.com/80"}
+                            className="avatar"
+                            onClick={() => fileInputRef.current?.click()}
+                        />
+                        <div className="mask">更换头像</div>
+                    </div>
+
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
                     />
                 </div>
 
