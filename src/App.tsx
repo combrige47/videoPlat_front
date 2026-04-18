@@ -3,7 +3,7 @@ import './App.css'
 import AuthModal from './components/AuthModal'
 import type { UserInfo } from './types/user'
 import request from "./utils/request.ts";
-import VideoList from "./components/VideoList";
+import VideoList from "./components/VideoList.tsx";
 import {Routes, Route, Link, BrowserRouter} from "react-router-dom";
 import VideoPlayer from "./pages/VideoPlayer";
 import UploadPage from "./pages/uploadPage.tsx";
@@ -78,6 +78,7 @@ function App() {
           )}
         </div>
       </header>
+        <main className="app-main">
         <Routes>
             <Route path="/" element={<VideoList />} />
             <Route path="/upload" element={<UploadPage />}/>
@@ -85,6 +86,7 @@ function App() {
             <Route path= "/account" element={<ProfilePage />} />
             <Route path="/:publicId" element={<VideoPlayer />} />
         </Routes>
+        </ main>
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

@@ -1,88 +1,283 @@
-.profile-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 24px;
-    padding-top: 60px;
+/* ── Root ────────────────────────────────── */
+.pp-root {
+    --pp-accent: #4f7cff;
+    --pp-accent-hover: #3a67f0;
+    --pp-border: #e8eaf0;
+    --pp-text: #1a1d26;
+    --pp-muted: #8b90a0;
+    --pp-surface: #f4f6fb;
+    --pp-bg: #ffffff;
+    --pp-radius: 14px;
+
+    min-height: 100vh;
+    background: var(--pp-surface);
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px 80px;
 }
 
-.profile-header {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.avatar-wrapper {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    cursor: pointer;
-}
-
-.avatar {
+.pp-container {
     width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
-.mask {
+/* ── Banner ──────────────────────────────── */
+.pp-banner {
+    position: relative;
+    border-radius: var(--pp-radius) var(--pp-radius) 0 0;
+    overflow: visible;
+    height: 130px;
+    margin-bottom: 52px;
+}
+
+.pp-banner-bg {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.5);
-    color: white;
+    border-radius: var(--pp-radius) var(--pp-radius) 0 0;
+    background: linear-gradient(135deg, #dde4ff 0%, #c8d8ff 50%, #d5e8ff 100%);
+}
+
+/* 头像定位 */
+.pp-avatar-area {
+    position: absolute;
+    bottom: -48px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.pp-avatar-wrap {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 3px solid var(--pp-bg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background: var(--pp-surface);
+    transition: box-shadow 0.2s;
+}
+
+.pp-avatar-wrap:hover {
+    box-shadow: 0 6px 24px rgba(79, 124, 255, 0.2);
+}
+
+.pp-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.pp-avatar-initials {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    border-radius: 50%;
-    transition: 0.2s;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--pp-accent);
+    background: #dde4ff;
+    letter-spacing: 0.04em;
 }
 
-.avatar-wrapper:hover .mask {
+.pp-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.38);
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.18s;
+    border-radius: 50%;
+}
+
+.pp-avatar-wrap:hover .pp-avatar-overlay {
     opacity: 1;
 }
 
-.card {
-    background: #fff;
-    padding: 16px;
-    border-radius: 12px;
-    margin-bottom: 16px;
+/* ── Identity block ───────────────────────── */
+.pp-identity {
+    text-align: center;
+    padding: 0 16px 20px;
 }
 
-.card input,
-.card textarea {
+.pp-username {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--pp-text);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+}
+
+.pp-bio-preview {
+    font-size: 14px;
+    color: var(--pp-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ── Card ────────────────────────────────── */
+.pp-card {
+    background: var(--pp-bg);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.pp-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pp-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--pp-muted);
+}
+
+.pp-save-badge {
+    font-size: 12px;
+    font-weight: 500;
+    color: #2d9e6b;
+    background: #e4f7ef;
+    padding: 3px 10px;
+    border-radius: 20px;
+    animation: pp-fade-in 0.2s ease;
+}
+
+/* ── Field ───────────────────────────────── */
+.pp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pp-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--pp-muted);
+    letter-spacing: 0.02em;
+}
+
+.pp-input,
+.pp-textarea {
     width: 100%;
-    margin-top: 8px;
-    padding: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--pp-text);
+    background: var(--pp-surface);
+    border: 1px solid var(--pp-border);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: none;
 }
 
-.tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.tag {
-    background: #eee;
-    padding: 4px 10px;
-    border-radius: 12px;
-}
-
-.actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.save {
-    background: #00a1d6;
-    color: white;
-}
-
-.actions{
-    color: #1f2028;
-}
-
-.actions button{
-    color: #1f2028;
+.pp-input:disabled,
+.pp-textarea:disabled {
     background: transparent;
+    border-color: transparent;
+    color: var(--pp-text);
+    cursor: default;
+    padding-left: 0;
+}
+
+.pp-input--active {
+    background: var(--pp-surface);
+    border-color: var(--pp-border);
+}
+
+.pp-input--active:focus {
+    border-color: var(--pp-accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.12);
+}
+
+/* ── Actions ─────────────────────────────── */
+.pp-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 18px;
+}
+
+.pp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 26px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+    font-family: inherit;
+}
+
+.pp-btn--primary {
+    background: var(--pp-accent);
+    color: #fff;
+}
+
+.pp-btn--primary:hover:not(:disabled) {
+    background: var(--pp-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(79, 124, 255, 0.3);
+}
+
+.pp-btn--primary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.pp-btn--primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.pp-btn--ghost {
+    background: var(--pp-surface);
+    color: var(--pp-muted);
+    border: 1px solid var(--pp-border);
+}
+
+.pp-btn--ghost:hover {
+    background: var(--pp-border);
+    color: var(--pp-text);
+}
+
+/* ── Spinner ─────────────────────────────── */
+.pp-spinner {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: pp-spin 0.7s linear infinite;
+}
+
+/* ── Animations ──────────────────────────── */
+@keyframes pp-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pp-fade-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
 }

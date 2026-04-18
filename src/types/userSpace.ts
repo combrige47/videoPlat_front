@@ -1,3 +1,5 @@
+import type {VideoInfo} from "./video.ts";
+
 export interface SpaceVideoInfo{
     publicId: string;
     title: string;
@@ -10,7 +12,7 @@ export interface SpaceVideoInfo{
 }
 
 export interface VideoCardPros{
-    video: SpaceVideoInfo;
+    video: VideoInfo;
 }
 
 export interface SpaceInfo{

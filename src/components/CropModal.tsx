@@ -1,6 +1,7 @@
 import Cropper from "react-easy-crop";
-import type { Area } from "react-easy-crop"
-import { useEffect, useState, useCallback } from "react";
+import type { Area } from "react-easy-crop";
+import { useState, useCallback } from "react";
+import "./CropModal.css";
 
 type Props = {
     image: string;
@@ -13,13 +14,10 @@ export default function CropModal({ image, onCancel, onConfirm }: Props) {
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [uploading, setUploading] = useState(false);
-
-    // 存储图片原始自然尺寸，用于精准计算预览偏移
     const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
 
-    const PREVIEW_SIZE = 120; // 预览窗口的大小
+    const PREVIEW_SIZE = 100;
 
-    // 自动计算预览缩放倍率：预览容器宽度 / 实际裁剪区域的像素宽度
     const previewScale = croppedAreaPixels
         ? PREVIEW_SIZE / croppedAreaPixels.width
         : 0;
@@ -32,39 +30,32 @@ export default function CropModal({ image, onCancel, onConfirm }: Props) {
         new Promise((resolve, reject) => {
             const img = new Image();
             img.addEventListener("load", () => resolve(img));
-            img.addEventListener("error", (error) => reject(error));
-            // 必须处理跨域，否则 canvas.toBlob 会报错
+            img.addEventListener("error", reject);
             img.setAttribute("crossOrigin", "anonymous");
             img.src = url;
         });
 
-    const getCroppedImg = async () => {
+    const getCroppedImg = async (): Promise<Blob | null> => {
         if (!croppedAreaPixels) return null;
-
         const img = await createImage(image);
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-
         if (!ctx) return null;
 
-        const size = 300; // 最终导出的头像尺寸
+        const size = 300;
         canvas.width = size;
         canvas.height = size;
-
         ctx.drawImage(
             img,
             croppedAreaPixels.x,
             croppedAreaPixels.y,
             croppedAreaPixels.width,
             croppedAreaPixels.height,
-            0,
-            0,
-            size,
-            size
+            0, 0, size, size
         );
 
         return new Promise<Blob | null>((resolve) => {
-            canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.9);
+            canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
         });
     };
 
@@ -82,53 +73,45 @@ export default function CropModal({ image, onCancel, onConfirm }: Props) {
     };
 
     return (
-        <div className="crop-modal">
-            <div className="mask" onClick={onCancel} />
+        <div className="cm-overlay" onClick={onCancel}>
+            <div className="cm-panel" onClick={(e) => e.stopPropagation()}>
 
-            <div className="crop-container">
-                <div className="crop-body">
-                    {/* 左侧：裁剪交互区 */}
-                    <div className="crop-left">
-                        <div className="cropper-wrapper" style={{ position: 'relative', height: 280, width: 320 }}>
-                            <Cropper
-                                image={image}
-                                crop={crop}
-                                zoom={zoom}
-                                aspect={1}
-                                cropShape="round"
-                                showGrid={false}
-                                onCropChange={setCrop}
-                                onZoomChange={setZoom}
-                                onCropComplete={onCropComplete}
-                            />
-                        </div>
+                {/* 标题栏 */}
+                <div className="cm-header">
+                    <span className="cm-title">编辑头像</span>
+                    <button className="cm-close" onClick={onCancel} aria-label="关闭">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                    </button>
+                </div>
 
-                        <div className="controls" style={{ padding: '20px 0' }}>
-                            <input
-                                type="range"
-                                min={1}
-                                max={3}
-                                step={0.1}
-                                value={zoom}
-                                onChange={(e) => setZoom(Number(e.target.value))}
-                                style={{ width: '100%' }}
-                            />
-                        </div>
+                {/* 主体：左裁剪 + 右预览 */}
+                <div className="cm-body">
+
+                    {/* 左侧裁剪区 */}
+                    <div className="cm-cropper-wrap">
+                        <Cropper
+                            image={image}
+                            crop={crop}
+                            zoom={zoom}
+                            aspect={1}
+                            cropShape="round"
+                            showGrid={false}
+                            onCropChange={setCrop}
+                            onZoomChange={setZoom}
+                            onCropComplete={onCropComplete}
+                        />
                     </div>
 
-                    {/* 右侧：实时预览区 */}
-                    <div className="crop-right" style={{ marginLeft: 40, textAlign: 'center' }}>
+                    {/* 右侧预览区 */}
+                    <div className="cm-preview-col">
+                        <p className="cm-preview-label">预览效果</p>
+
+                        {/* 大预览 */}
                         <div
-                            className="preview-image-wrapper"
-                            style={{
-                                width: PREVIEW_SIZE,
-                                height: PREVIEW_SIZE,
-                                borderRadius: '50%',
-                                overflow: 'hidden',
-                                position: 'relative',
-                                border: '1px solid #ddd',
-                                backgroundColor: '#f9f9f9'
-                            }}
+                            className="cm-preview-circle cm-preview-lg"
+                            style={{ width: PREVIEW_SIZE, height: PREVIEW_SIZE }}
                         >
                             {croppedAreaPixels && (
                                 <img
@@ -139,45 +122,89 @@ export default function CropModal({ image, onCancel, onConfirm }: Props) {
                                         setNaturalSize({ width: naturalWidth, height: naturalHeight });
                                     }}
                                     style={{
-                                        position: 'absolute',
+                                        position: "absolute",
                                         left: 0,
                                         top: 0,
-                                        // 关键：强制设置图片显示宽度为自然宽度，确保 translate 像素对齐
-                                        width: naturalSize.width || 'auto',
-                                        maxWidth: 'none',
-                                        maxHeight: 'none',
+                                        width: naturalSize.width || "auto",
+                                        maxWidth: "none",
+                                        maxHeight: "none",
                                         transformOrigin: "0 0",
-                                        // 先位移到裁剪像素点，再整体缩放至预览框大小
                                         transform: `
-                                            translate(-${croppedAreaPixels.x * previewScale}px, -${croppedAreaPixels.y * previewScale}px) 
+                                            translate(-${croppedAreaPixels.x * previewScale}px, -${croppedAreaPixels.y * previewScale}px)
                                             scale(${previewScale})
                                         `,
-                                        // 图片未加载完前隐藏，避免闪烁
-                                        visibility: naturalSize.width ? 'visible' : 'hidden'
+                                        visibility: naturalSize.width ? "visible" : "hidden",
                                     }}
                                 />
                             )}
                         </div>
-                        <div className="preview-text" style={{ marginTop: 10, fontSize: 12, color: '#666' }}>
-                            预览头像
+                        <span className="cm-preview-size-tag">100 × 100</span>
+
+                        {/* 小预览 */}
+                        <div
+                            className="cm-preview-circle cm-preview-sm"
+                            style={{ width: 48, height: 48 }}
+                        >
+                            {croppedAreaPixels && naturalSize.width > 0 && (() => {
+                                const s = 48 / croppedAreaPixels.width;
+                                return (
+                                    <img
+                                        src={image}
+                                        alt="preview-sm"
+                                        style={{
+                                            position: "absolute",
+                                            left: 0,
+                                            top: 0,
+                                            width: naturalSize.width,
+                                            maxWidth: "none",
+                                            maxHeight: "none",
+                                            transformOrigin: "0 0",
+                                            transform: `translate(-${croppedAreaPixels.x * s}px, -${croppedAreaPixels.y * s}px) scale(${s})`,
+                                        }}
+                                    />
+                                );
+                            })()}
                         </div>
+                        <span className="cm-preview-size-tag">48 × 48</span>
                     </div>
                 </div>
 
-                {/* 底部按钮 */}
-                <div className="crop-footer">
-                    <p className="tip">支持 JPG / PNG，小于 2MB</p>
-                    <div className="btns" style={{ display: 'flex', gap: 10 }}>
-                        <button className="btn-cancel" onClick={onCancel}>取消</button>
+                {/* 缩放滑条 */}
+                <div className="cm-zoom-row">
+                    <svg className="cm-zoom-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/>
+                        <path d="M11 8v6M8 11h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <input
+                        className="cm-zoom-slider"
+                        type="range"
+                        min={1}
+                        max={3}
+                        step={0.01}
+                        value={zoom}
+                        onChange={(e) => setZoom(Number(e.target.value))}
+                    />
+                    <span className="cm-zoom-val">{Math.round((zoom - 1) / 2 * 100)}%</span>
+                </div>
+
+                {/* 底部操作栏 */}
+                <div className="cm-footer">
+                    <span className="cm-tip">支持 JPG / PNG，小于 2MB</span>
+                    <div className="cm-actions">
+                        <button className="cm-btn-cancel" onClick={onCancel}>取消</button>
                         <button
-                            className="btn-confirm"
+                            className="cm-btn-confirm"
                             onClick={handleConfirm}
                             disabled={uploading || !naturalSize.width}
                         >
-                            {uploading ? "处理中..." : "确定更新"}
+                            {uploading
+                                ? <><span className="cm-spinner" /> 处理中</>
+                                : "确认更新"}
                         </button>
                     </div>
                 </div>
+
             </div>
         </div>
     );
